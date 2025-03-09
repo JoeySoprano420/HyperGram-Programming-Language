@@ -206,3 +206,90 @@ hypergram_code = """
 
 compiler = HypergramCompiler()
 compiler.run(hypergram_code)
+
+class DirectMappingSystem:
+    def __init__(self, data_input):
+        self.data_input = data_input  # Raw data
+        self.mapping_rules = {}       # Direct mappings of data
+        self.feedback = []            # Feedback collection for learning
+        self.decision_tree = {}       # A decision tree-like structure for learning
+
+    def map_data(self):
+        """
+        Direct mapping function that interprets raw data.
+        This step is where the system will map data directly to instructions or tasks.
+        """
+        for data in self.data_input:
+            if data not in self.mapping_rules:
+                self.mapping_rules[data] = self.process_data(data)
+        return self.mapping_rules
+
+    def process_data(self, data):
+        """
+        This function processes data in a direct way, minimizing unnecessary abstraction.
+        It's highly context-specific and depends on your application.
+        """
+        # Basic processing logic; could be anything such as arithmetic, data translation, etc.
+        return data * 2  # Example of simple processing
+
+    def make_decision(self, context):
+        """
+        A decision-tree mechanism that decides what to do based on context.
+        The decision tree improves over time with unsupervised feedback.
+        """
+        if context not in self.decision_tree:
+            self.decision_tree[context] = self.evaluate_context(context)
+        return self.decision_tree[context]
+
+    def evaluate_context(self, context):
+        """
+        Evaluates the context and makes an initial decision.
+        Feedback will modify the decision process iteratively.
+        """
+        if context == "positive":
+            return "continue"
+        elif context == "negative":
+            return "retry"
+        else:
+            return "wait"
+
+    def learn_from_feedback(self, outcome):
+        """
+        Adjusts the decision-tree based on feedback after actions are taken.
+        Uses a reinforced learning model to improve decisions.
+        """
+        self.feedback.append(outcome)
+        if len(self.feedback) > 10:
+            self.adjust_decision_tree()
+
+    def adjust_decision_tree(self):
+        """
+        Iteratively adjusts decision-making process based on accumulated feedback.
+        """
+        positive_feedback = self.feedback.count("positive")
+        negative_feedback = self.feedback.count("negative")
+
+        if positive_feedback > negative_feedback:
+            self.decision_tree["positive"] = "continue"
+        else:
+            self.decision_tree["positive"] = "retry"
+            
+        self.feedback = []  # Reset feedback after adjustment
+
+    def run(self):
+        """
+        Main execution loop where the system runs through the data and makes decisions.
+        This function incorporates direct mapping and unsupervised iterative learning.
+        """
+        self.map_data()
+        for context in ["positive", "negative", "neutral"]:
+            decision = self.make_decision(context)
+            print(f"Decision for {context}: {decision}")
+            # Simulate feedback
+            self.learn_from_feedback("positive" if context == "positive" else "negative")
+
+
+# Example usage
+data_input = [1, 2, 3, 4, 5]  # Raw data
+system = DirectMappingSystem(data_input)
+system.run()
