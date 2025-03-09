@@ -1,0 +1,245 @@
+// Hypergram Complete Grammar File (EBNF Style)
+
+(* Lexical Tokens *)
+token INTEGER         = [0-9]+;
+token FLOAT           = [0-9]+\.[0-9]+;
+token STRING          = '"' ([^"\\] | '\\.')* '"';
+token IDENTIFIER      = [a-zA-Z_][a-zA-Z0-9_]*;
+token KEYWORD         = 'var' | 'func' | 'if' | 'else' | 'while' | 'return' | 'alloc' | 'dma' | 'gpu' | 'asm' | 'macro' | 'profile' | 'node' | 'parallel' | 'core' | 'register' | 'bytecode' | 'model' | 'load' | 'run' | 'sync' | 'debug' | 'assert' | 'true' | 'false';
+token OPERATOR        = '+' | '-' | '*' | '/' | '&&' | '||' | '==' | '!=' | '<' | '>' | '=' | '.' | ',' | ';' | ':' | '(' | ')';
+token PARENTHESIS     = '(' | ')';
+token BRACES          = '{' | '}';
+token BRACKET         = '[' | ']';
+token COMMA           = ',';
+token COMMENT         = '//' .* | '/*' .* '*/';
+
+(* Grammar Rules *)
+
+Program                 = { Declaration | Function | Statement }* ;
+
+Declaration            = 'var' IDENTIFIER ( ':' Type )? '=' Expression ';' ;
+
+Function               = 'func' IDENTIFIER '(' Parameters? ')' Block ;
+
+Parameters            = { IDENTIFIER (',' IDENTIFIER)* } ;
+
+Block                 = '{' { Declaration | Statement }* '}' ;
+
+Statement             = Assignment | ControlStatement | InlineAssembly | FunctionCall | ReturnStatement ;
+
+Assignment            = IDENTIFIER '=' Expression ';' ;
+
+ControlStatement      = IfStatement | WhileStatement ;
+
+IfStatement           = 'if' '(' Expression ')' Block ('else' Block)? ;
+
+WhileStatement        = 'while' '(' Expression ')' Block ;
+
+ReturnStatement       = 'return' Expression? ';' ;
+
+Expression            = ArithmeticExpression | BooleanExpression | Literal | Variable ;
+
+ArithmeticExpression  = Expression OPERATOR Expression ;
+
+BooleanExpression     = Expression OPERATOR Expression ;
+
+Literal               = INTEGER | FLOAT | STRING | BOOLEAN ;
+
+Variable              = IDENTIFIER ;
+
+InlineAssembly        = 'asm' Block ;
+
+FunctionCall          = IDENTIFIER '(' Arguments? ')' ;
+
+Arguments            = { Expression (',' Expression)* } ;
+
+Type                  = 'int' | 'float' | 'string' | 'bool' | 'register' ;
+
+MacroDefinition       = 'macro' IDENTIFIER '(' Parameters ')' Block ;
+
+ProfileStatement      = 'profile' ('start' | 'end') ';' ;
+
+DebugStatement        = 'debug' Block ;
+
+DebugAssert           = 'assert' '(' Expression ')' ';' ;
+
+(* Advanced Constructs *)
+
+MemoryManagement      = Alloc | Free ;
+
+Alloc                 = 'alloc' IDENTIFIER ('[' INTEGER ']')? ';' ;
+
+Free                  = 'free' IDENTIFIER ';' ;
+
+RegisterControl       = RegisterAssignment | PipelineBlock ;
+
+RegisterAssignment   = 'register' IDENTIFIER '=' Expression ';' ;
+
+PipelineBlock         = 'pipeline' '{' { RegisterAssignment }* '}' ;
+
+GPUExecution          = 'gpu' 'launch' IDENTIFIER (Arguments?) ';' | 'gpu' 'sync' ';' ;
+
+ParallelExecution     = 'parallel' Block ;
+
+MultiCoreExecution    = 'core' '(' INTEGER ')' Block ;
+
+DistributedExecution  = 'node' '(' INTEGER ')' Block ;
+
+AIIntegration         = 'model' '=' 'load' '(' STRING ')' ';' | 'model' '.' 'run' '(' Arguments ')' ;
+
+DMA                   = 'dma' 'transfer' Expression 'to' Expression ';' ;
+
+BytecodeBlock         = 'bytecode' Block ;
+
+(* Expressions and Types *)
+
+ArithmeticOperator    = '+' | '-' | '*' | '/' ;
+
+BooleanOperator       = '==' | '!=' | '&&' | '||' ;
+
+(* Comments *)
+
+Comment               = '//' .* | '/*' .* '*/' ;
+
+// Hypergram Extended Grammar File (EBNF Style)
+
+(* Lexical Tokens *)
+token INTEGER         = [0-9]+ ;
+token FLOAT           = [0-9]+\.[0-9]+ ;
+token STRING          = '"' ([^"\\] | '\\.')* '"' ;
+token IDENTIFIER      = [a-zA-Z_][a-zA-Z0-9_]* ;
+token KEYWORD         = 'var' | 'func' | 'if' | 'else' | 'while' | 'return' | 'alloc' | 'dma' | 'gpu' | 'asm' | 'macro' | 'profile' | 'node' | 'parallel' | 'core' | 'register' | 'bytecode' | 'model' | 'load' | 'run' | 'sync' | 'debug' | 'assert' | 'true' | 'false' | 'import' | 'export' | 'allocate' | 'parallel' | 'thread' | 'sync' ;
+token OPERATOR        = '+' | '-' | '*' | '/' | '&&' | '||' | '==' | '!=' | '<' | '>' | '=' | '.' | ',' | ';' | ':' | '(' | ')' ;
+token PARENTHESIS     = '(' | ')' ;
+token BRACES          = '{' | '}' ;
+token BRACKET         = '[' | ']' ;
+token COMMA           = ',' ;
+token COMMENT         = '//' .* | '/*' .* '*/' ;
+
+(* Grammar Rules *)
+
+Program                 = { Declaration | Function | Statement | Module | Import | Export }* ;
+
+Declaration            = 'var' IDENTIFIER ( ':' Type )? '=' Expression ';' ;
+
+Function               = 'func' IDENTIFIER '(' Parameters? ')' Block ;
+
+Parameters            = { IDENTIFIER (',' IDENTIFIER)* } ;
+
+Block                 = '{' { Declaration | Statement | ControlStatement }* '}' ;
+
+Statement             = Assignment | ControlStatement | InlineAssembly | FunctionCall | ReturnStatement | MemoryManagement | ProfilingStatement | DebugStatement ;
+
+Assignment            = IDENTIFIER '=' Expression ';' ;
+
+ControlStatement      = IfStatement | WhileStatement | ForStatement ;
+
+IfStatement           = 'if' '(' Expression ')' Block ('else' Block)? ;
+
+WhileStatement        = 'while' '(' Expression ')' Block ;
+
+ForStatement          = 'for' '(' Declaration ';' Expression ';' Expression ')' Block ;
+
+ReturnStatement       = 'return' Expression? ';' ;
+
+Expression            = ArithmeticExpression | BooleanExpression | Literal | Variable | FunctionCall ;
+
+ArithmeticExpression  = Expression OPERATOR Expression ;
+
+BooleanExpression     = Expression OPERATOR Expression ;
+
+Literal               = INTEGER | FLOAT | STRING | BOOLEAN ;
+
+Variable              = IDENTIFIER ;
+
+InlineAssembly        = 'asm' Block ;
+
+FunctionCall          = IDENTIFIER '(' Arguments? ')' ;
+
+Arguments            = { Expression (',' Expression)* } ;
+
+Type                  = 'int' | 'float' | 'string' | 'bool' | 'register' | 'pointer' | 'thread' ;
+
+MacroDefinition       = 'macro' IDENTIFIER '(' Parameters ')' Block ;
+
+ProfilingStatement    = 'profile' ('start' | 'end') ';' ;
+
+DebugStatement        = 'debug' Block ;
+
+(* Advanced Constructs *)
+
+MemoryManagement      = Alloc | Free ;
+
+Alloc                 = 'alloc' IDENTIFIER ('[' INTEGER ']')? ('(' Expression ')')? ';' ;
+
+Free                  = 'free' IDENTIFIER ';' ;
+
+RegisterControl       = RegisterAssignment | PipelineBlock ;
+
+RegisterAssignment   = 'register' IDENTIFIER '=' Expression ';' ;
+
+PipelineBlock         = 'pipeline' '{' { RegisterAssignment }* '}' ;
+
+GPUExecution          = 'gpu' 'launch' IDENTIFIER (Arguments?) ';' | 'gpu' 'sync' ';' ;
+
+ParallelExecution     = 'parallel' Block ;
+
+MultiCoreExecution    = 'core' '(' INTEGER ')' Block ;
+
+DistributedExecution  = 'node' '(' INTEGER ')' Block ;
+
+DMA                   = 'dma' 'transfer' Expression 'to' Expression ';' ;
+
+AIIntegration         = 'model' '=' 'load' '(' STRING ')' ';' | 'model' '.' 'run' '(' Arguments ')' ;
+
+BytecodeBlock         = 'bytecode' Block ;
+
+ThreadingExecution    = 'thread' '(' INTEGER ')' Block ;
+
+SyncExecution         = 'sync' Block ;
+
+NetworkCommunication  = 'network' 'send' IDENTIFIER 'to' IDENTIFIER ';' | 'network' 'receive' IDENTIFIER 'from' IDENTIFIER ';' ;
+
+(* Advanced Expressions *)
+
+FunctionCall          = IDENTIFIER '(' Arguments? ')' ;
+
+DirectExpression      = IDENTIFIER '[' Expression ']' ;
+
+PointerExpression     = '*' IDENTIFIER ;
+
+PointerAssignment     = '*' IDENTIFIER '=' Expression ';' ;
+
+ReferenceExpression   = '&' IDENTIFIER ;
+
+GenericExpression     = '(' Expression ')' ;
+
+(* Networking Constructs *)
+
+NetworkCommunication  = 'network' 'send' IDENTIFIER 'to' IDENTIFIER ';' 
+                       | 'network' 'receive' IDENTIFIER 'from' IDENTIFIER ';' ;
+
+(* Import/Export Constructs *)
+
+Import                = 'import' STRING ';' ;
+
+Export                = 'export' IDENTIFIER ';' ;
+
+(* Control Flow Extensions *)
+
+YieldStatement        = 'yield' Expression ';' ;
+
+InterruptStatement    = 'interrupt' ';' ;
+
+(* Comments *)
+
+Comment               = '//' .* | '/*' .* '*/' ;
+
+(* Abstract Function Calls *)
+
+AbstractFunctionCall  = IDENTIFIER '(' Arguments? ')' ;
+
+(* Finalization *)
+
+Finalization          = 'final' '(' Arguments? ')' Block ;
+
