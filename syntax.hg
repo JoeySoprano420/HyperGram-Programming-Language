@@ -1,0 +1,49 @@
+@print "Hello, Hypergram!"
+@store myVar 42
+@load myVar
+
+@asm {
+    mov eax, 1
+    add eax, 2
+    ret
+}
+
+@ai_train [[0.1, 0.2, 0.3], [0.4]]
+@ai_infer [0.2, 0.3, 0.5]
+
+@gpu_exec [0.1, 0.2, 0.3]
+@gpu_multi_exec [0.1, 0.2, 0.3]
+
+@mov_r R1 255
+
+@run "ls -la"
+
+# Pure Directive Execution (No High-Level Abstractions)
+@start
+    @define VAR user_input :str
+    @read stdin > user_input
+    @print "User entered:" + user_input
+
+    @block SYSTEM
+        @run "echo 'Running system diagnostics...'"
+        @asm {
+            mov eax, 1
+            xor ebx, ebx
+            int 0x80
+        }
+    @endblock
+
+    @block FILE_MANAGEMENT
+        @define FILE_PATH "/etc/hypergram/config.yml"
+        @read FILE_PATH > config_data
+        @print "Config Loaded:" + config_data
+    @endblock
+
+    @block NETWORK
+        @define API_URL "https://api.example.com/data"
+        @fetch API_URL > api_response
+        @json_parse api_response > parsed_data
+        @print "Fetched Data:" + parsed_data
+    @endblock
+@end
+
