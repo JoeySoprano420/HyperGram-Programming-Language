@@ -1,3 +1,56 @@
+import time
+import traceback
+
+class DeferredErrorHandler:
+    def __init__(self):
+        # Initialize an empty list to store errors
+        self.errors = []
+
+    def capture_error(self, e):
+        # Capture and store the error message and traceback
+        error_message = f"Error: {str(e)}\nTraceback:\n{traceback.format_exc()}"
+        self.errors.append(error_message)
+
+    def resolve_errors(self):
+        # Print all the captured errors at the end of the program
+        if self.errors:
+            print("\n[Deferred Errors Report]")
+            for error in self.errors:
+                print(error)
+        else:
+            print("[No errors encountered during execution.]")
+
+class MyProgram:
+    def __init__(self):
+        self.error_handler = DeferredErrorHandler()
+
+    def run(self):
+        # Simulate running the program and encountering errors
+        for i in range(5):
+            try:
+                # Intentionally cause a division by zero error for demonstration
+                if i == 2:
+                    result = 10 / 0  # This will raise ZeroDivisionError
+                print(f"Step {i} completed successfully.")
+                time.sleep(1)
+            except Exception as e:
+                self.error_handler.capture_error(e)
+        
+        # Final step to handle errors
+        self.error_handler.resolve_errors()
+
+    def wait_for_exit(self):
+        # Make sure the program does not close until 'Enter' is pressed
+        print("Press Enter to exit the program...")
+        input()
+
+if __name__ == "__main__":
+    # Create and run the program
+    program = MyProgram()
+    program.run()
+    program.wait_for_exit()
+
+
 import torch  # For GPU acceleration and AI integration
 import llvmlite.binding as llvm
 import llvmlite.ir as ir
