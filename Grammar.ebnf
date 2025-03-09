@@ -414,3 +414,195 @@ ForkJoin = 'forkjoin' Block ;
 Coroutine = 'coroutine' Block ;
 
 FlowControl = 'flow' IDENTIFIER Block ;
+
+// Hypergram Complete Grammar File (Extended)
+
+token INTEGER = [0-9]+;
+token FLOAT = [0-9]+\.[0-9]+;
+token STRING = '"' ([^"\\] | '\\.')* '"';
+token IDENTIFIER = [a-zA-Z_][a-zA-Z0-9_]*;
+token KEYWORD = 'var' | 'func' | 'if' | 'else' | 'while' | 'return' | 'alloc' | 'dma' | 'gpu' | 'asm' | 'macro' | 'profile' | 'node' | 'parallel' | 'core' | 'register' | 'bytecode' | 'model' | 'load' | 'run' | 'sync' | 'debug' | 'assert' | 'true' | 'false' | 'class' | 'interface' | 'extends' | 'implements' | 'new' | 'this' | 'super' | 'yield' | 'match' | 'import' | 'export' | 'thread' | 'sync' | 'final' | 'module' | 'abstract' | 'private' | 'protected' | 'public' | 'abstract' | 'try' | 'catch' | 'finally' | 'throw' | 'interface' | 'case' | 'default' | 'const' | 'static' | 'volatile' | 'enum' | 'lambda' | 'return' | 'delegate' | 'typeof' | 'assert' | 'in' | 'out' | 'void' | 'typeof' | 'type' | 'pattern' | 'define';
+token OPERATOR = '+' | '-' | '*' | '/' | '&&' | '||' | '==' | '!=' | '<' | '>' | '=' | '.' | ',' | ';' | ':' | '(' | ')' | '::' | '++' | '--' | '->' | '?' ;
+token PARENTHESIS = '(' | ')';
+token BRACES = '{' | '}';
+token BRACKET = '[' | ']';
+token COMMA = ',';
+token COMMENT = '//' .* | '/*' .* '*/';
+
+// Grammar Rules
+
+Program = { Declaration | Function | Statement | ClassDeclaration | InterfaceDeclaration | ModuleDeclaration | ImportStatement | ExportStatement }* ;
+
+Declaration = 'var' IDENTIFIER ( ':' Type )? '=' Expression ';' ;
+
+Function = 'func' IDENTIFIER '(' Parameters? ')' Block ;
+
+ClassDeclaration = 'class' IDENTIFIER ('extends' IDENTIFIER)? ('implements' IDENTIFIER)? '{' { Declaration | Function | Statement }* '}' ;
+
+InterfaceDeclaration = 'interface' IDENTIFIER '{' { Declaration | Function }* '}' ;
+
+ModuleDeclaration = 'module' IDENTIFIER '{' { Declaration | Function | Statement }* '}' ;
+
+ImportStatement = 'import' STRING ';' ;
+
+ExportStatement = 'export' IDENTIFIER ';' ;
+
+Parameters = { IDENTIFIER (',' IDENTIFIER)* } ;
+
+Block = '{' { Declaration | Statement }* '}' ;
+
+Statement = Assignment | ControlStatement | InlineAssembly | FunctionCall | ReturnStatement | ThrowStatement | TryCatchStatement | YieldStatement | SyncExecution | ProfileStatement | DebugStatement;
+
+Assignment = IDENTIFIER '=' Expression ';' ;
+
+ControlStatement = IfStatement | WhileStatement | ForStatement | SwitchStatement ;
+
+IfStatement = 'if' '(' Expression ')' Block ('else' Block)? ;
+
+WhileStatement = 'while' '(' Expression ')' Block ;
+
+ForStatement = 'for' '(' Declaration ';' Expression ';' Expression ')' Block ;
+
+SwitchStatement = 'switch' '(' Expression ')' '{' { CaseStatement }* '}' ;
+
+CaseStatement = 'case' Expression ':' Block ;
+
+ThrowStatement = 'throw' Expression ';' ;
+
+TryCatchStatement = 'try' Block 'catch' Block ('finally' Block)?;
+
+ReturnStatement = 'return' Expression? ';' ;
+
+YieldStatement = 'yield' Expression ';' ;
+
+SyncExecution = 'sync' Block ;
+
+Expression = ArithmeticExpression | BooleanExpression | Literal | Variable | FunctionCall | LambdaExpression | GenericExpression | TypeofExpression | PatternExpression;
+
+ArithmeticExpression = Expression OPERATOR Expression ;
+
+BooleanExpression = Expression OPERATOR Expression ;
+
+Literal = INTEGER | FLOAT | STRING | BOOLEAN ;
+
+Variable = IDENTIFIER ;
+
+FunctionCall = IDENTIFIER '(' Arguments? ')' ;
+
+Arguments = { Expression (',' Expression)* } ;
+
+LambdaExpression = 'lambda' Parameters Block ;
+
+TypeofExpression = 'typeof' Expression ;
+
+PatternExpression = 'match' Expression 'with' { CasePattern }* ;
+
+CasePattern = 'case' PatternIdentifier ':' Block ;
+
+Type = 'int' | 'float' | 'string' | 'bool' | 'register' | 'void' | 'object' | 'any' | 'type' | 'function' ;
+
+TypeParameters = { Type (',' Type)* } ;
+
+AbstractFunctionCall = IDENTIFIER '(' Arguments? ')' ;
+
+GenericExpression = '(' Expression ')' ;
+
+PointerAssignment = '*' IDENTIFIER '=' Expression ';' ;
+
+PointerExpression = '*' IDENTIFIER ;
+
+ReferenceExpression = '&' IDENTIFIER ;
+
+DirectExpression = IDENTIFIER '[' Expression ']' ;
+
+InlineAssembly = 'asm' Block ;
+
+ProfileStatement = 'profile' ('start' | 'end') ';' ;
+
+DebugStatement = 'debug' Block ;
+
+DebugAssert = 'assert' '(' Expression ')' ';' ;
+
+
+// Advanced Constructs
+
+MemoryManagement = Alloc | Free ;
+
+Alloc = 'alloc' IDENTIFIER ('[' INTEGER ']')? ';' ;
+
+Free = 'free' IDENTIFIER ';' ;
+
+RegisterControl = RegisterAssignment | PipelineBlock ;
+
+RegisterAssignment = 'register' IDENTIFIER '=' Expression ';' ;
+
+PipelineBlock = 'pipeline' '{' { RegisterAssignment }* '}' ;
+
+GPUExecution = 'gpu' 'launch' IDENTIFIER (Arguments?) ';' | 'gpu' 'sync' ';' ;
+
+ParallelExecution = 'parallel' Block ;
+
+MultiCoreExecution = 'core' '(' INTEGER ')' Block ;
+
+DistributedExecution = 'node' '(' INTEGER ')' Block ;
+
+AIIntegration = 'model' '=' 'load' '(' STRING ')' ';' | 'model' '.' 'run' '(' Arguments ')' ;
+
+DMA = 'dma' 'transfer' Expression 'to' Expression ';' ;
+
+BytecodeBlock = 'bytecode' Block ;
+
+ThreadingExecution = 'thread' '(' INTEGER ')' Block ;
+
+NetworkCommunication = 'network' 'send' IDENTIFIER 'to' IDENTIFIER ';' 
+                     | 'network' 'receive' IDENTIFIER 'from' IDENTIFIER ';' ;
+
+InterruptStatement = 'interrupt' ';' ;
+
+Finalization = 'final' '(' Arguments? ')' Block ;
+
+EventDriven = 'event' IDENTIFIER 'on' IDENTIFIER '{' Statement* '}' ;
+
+ReactiveStatement = 'reactive' '(' IDENTIFIER ',' IDENTIFIER ')' Block ;
+
+ObserverPattern = 'observer' IDENTIFIER 'notify' '(' Expression ')' ';' ;
+
+FactoryPattern = 'factory' IDENTIFIER 'create' '(' Parameters ')' Block ;
+
+CommandPattern = 'command' IDENTIFIER 'execute' '(' Arguments ')' ';' ;
+
+StrategyPattern = 'strategy' IDENTIFIER 'choose' '(' Expression ')' Block ;
+
+CompositePattern = 'composite' IDENTIFIER '{' Statement* '}' ;
+
+DecoratorPattern = 'decorator' IDENTIFIER '(' Expression ')' Block ;
+
+StatePattern = 'state' IDENTIFIER 'set' '(' Expression ')' ';' ;
+
+VisitorPattern = 'visitor' IDENTIFIER 'visit' '(' Expression ')' ';' ;
+
+SingletonPattern = 'singleton' IDENTIFIER 'instance' ';' ;
+
+BuilderPattern = 'builder' IDENTIFIER 'build' '(' Parameters ')' ;
+
+MediationPattern = 'mediator' IDENTIFIER 'coordinate' '(' Parameters ')' Block ;
+
+TemplatePattern = 'template' IDENTIFIER 'type' '(' TypeParameters ')' Block ;
+
+AbstractFactoryPattern = 'abstractFactory' IDENTIFIER 'create' '(' Parameters ')' Block ;
+
+FlyweightPattern = 'flyweight' IDENTIFIER 'object' '(' Parameters ')' Block ;
+
+ChainOfResponsibilityPattern = 'chain' IDENTIFIER 'handle' '(' Expression ')' Block ;
+
+InterpreterPattern = 'interpreter' IDENTIFIER 'interpret' '(' Expression ')' Block ;
+
+ProxyPattern = 'proxy' IDENTIFIER 'access' '(' Expression ')' Block ;
+
+AdapterPattern = 'adapter' IDENTIFIER 'convert' '(' Expression ')' Block ;
+
+BridgePattern = 'bridge' IDENTIFIER 'connect' '(' Expression ')' Block ;
+
+FacadePattern = 'facade' IDENTIFIER 'simplify' '(' Expression ')' Block ;
+
+DecoratorPattern = 'decorator' IDENTIFIER 'decorate' '(' Expression ')' Block ;
