@@ -1128,3 +1128,78 @@ brute_force_system = BruteForceErrorHandlingSystem()
 execution_results = brute_force_system.execute(code_snippet)
 
 print("Execution Results:", execution_results)
+
+
+
+
+import ast
+import subprocess
+import os
+
+class CodeCleaner(ast.NodeVisitor):
+    def __init__(self, code):
+        self.code = code
+        self.executed_lines = set()
+
+    def visit_Expr(self, node):
+        line_num = node.lineno
+        self.executed_lines.add(line_num)
+        self.generic_visit(node)
+
+    def remove_unexecuted_code(self, executed_lines):
+        lines = self.code.split('\n')
+        cleaned_lines = [
+            line for i, line in enumerate(lines, start=1)
+            if i in executed_lines
+        ]
+        return '\n'.join(cleaned_lines)
+
+def run_code(code):
+    code_path = 'temp_code.py'
+    with open(code_path, 'w') as file:
+        file.write(code)
+
+    result = subprocess.run(['python', code_path], capture_output=True, text=True)
+    if result.returncode != 0:
+        print("Error encountered during execution:")
+        print(result.stderr)
+
+    os.remove(code_path)
+    return result.returncode, result.stdout
+
+def main():
+    original_code = """
+class Example:
+    def __init__(self, data):
+        self.data = data
+
+    def process_data(self):
+        result = 10 / 0  # This will raise ZeroDivisionError
+        print(f"Processed data: {result}")
+
+    def another_method(self):
+        result = 20 / 2
+        print(f"Another method result: {result}")
+
+example = Example([1, 2, 3])
+example.process_data()
+example.another_method()
+"""
+    cleaner = CodeCleaner(original_code)
+    success = False
+
+    while not success:
+        try:
+            exec(original_code)
+            success = True
+        except Exception as e:
+            print(f"Exception encountered: {e}")
+            executed_lines = set()
+            exec_ast = ast.parse(original_code)
+            cleaner.visit(exec_ast)
+            executed_lines.update(cleaner.executed_lines)
+            original_code = cleaner.remove_unexecuted_code(executed_lines)
+            print(f"Remaining executable code:\n{original_code}")
+
+if __name__ == "__main__":
+    main()
