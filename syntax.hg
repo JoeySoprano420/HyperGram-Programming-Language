@@ -141,3 +141,148 @@ debug {          // Debug block
     assert(x == 10);  // Assert if x is not 10
 }
 
+@print "Hello, Hypergram!"
+@store myVar 42
+@load myVar
+
+@asm {
+    mov eax, 1
+    add eax, 2
+    ret
+}
+
+@ai_train [[0.1, 0.2, 0.3], [0.4]]
+@ai_infer [0.2, 0.3, 0.5]
+
+@gpu_exec [0.1, 0.2, 0.3]
+@gpu_multi_exec [0.1, 0.2, 0.3]
+
+@mov_r R1 255
+
+@run "ls -la"
+
+# Pure Directive Execution (No High-Level Abstractions)
+@start
+    @define VAR user_input :str
+    @read stdin > user_input
+    @print "User entered:" + user_input
+
+    @block SYSTEM
+        @run "echo 'Running system diagnostics...'"
+        @asm {
+            mov eax, 1
+            xor ebx, ebx
+            int 0x80
+        }
+    @endblock
+
+    @block FILE_MANAGEMENT
+        @define FILE_PATH "/etc/hypergram/config.yml"
+        @read FILE_PATH > config_data
+        @print "Config Loaded:" + config_data
+    @endblock
+
+    @block NETWORK
+        @define API_URL "https://api.example.com/data"
+        @fetch API_URL > api_response
+        @json_parse api_response > parsed_data
+        @print "Fetched Data:" + parsed_data
+    @endblock
+@end
+
+var x: int = 42;
+var y: float = 3.14;
+func compute(): int { return x + y; }
+
+if (x > y) {
+    @print "x is greater than y";
+    // execute block 1
+} else if (x == y) {
+    @print "x is equal to y";
+    // execute block 2
+} else {
+    @print "x is less than y";
+    // execute block 3
+}
+
+while (i < 100) {
+    // execute loop body
+    i += 1;
+}
+
+alloc var arr[1024];          // Allocates memory for an array of 1024 elements
+alloc var mat[4][4];          // Allocates memory for a 4x4 matrix
+alloc var reg: register;      // Allocates a register
+
+// Direct Memory Access (DMA)
+dma transfer reg to mat[0][0]; // Transfers data from register to matrix location
+
+free reg;       // Frees the allocated register
+free arr;       // Frees the allocated memory for array
+
+asm {
+    mov r0, 42;      // Move value 42 into register r0
+    add r1, r0, 10;  // Add 10 to r0 and store in r1
+    cmp r0, r1;      // Compare r0 with r1
+    jmp label1;      // Jump to label1 if comparison is true
+}
+
+register r1 = 0x100;  // Assign register r1 with memory address 0x100
+register r2 = 0x200;  // Assign register r2 with memory address 0x200
+pipeline {
+    load r1;   // Load value from memory address of r1
+    store r2;  // Store value to memory address of r2
+}
+
+gpu launch kernel1;  // Launch a kernel on the GPU
+gpu sync;            // Synchronize GPU processing
+
+// Multi-core execution
+core(0) { 
+    // Core 0 work
+}
+
+core(1) { 
+    // Core 1 work
+}
+
+// Parallel Execution Block
+parallel {
+    task1();  // Execute task1 in parallel
+    task2();  // Execute task2 in parallel
+}
+
+model = load_model("model.onnx");  // Load AI model
+result = model.predict(data);      // Perform inference with the model
+
+gpu run {   // Run AI operations on GPU
+    data = preprocess(input);
+    result = model.predict(data);
+    return result;
+}
+
+node(0) { execute compute(); }  // Execute computation on node 0
+node(1) { execute compute(); }  // Execute computation on node 1
+
+// Low-level Networking for distributed execution
+net send data to node(1);  // Send data to another node
+net receive data from node(0);  // Receive data from node(0)
+
+macro calculate_square(x) { return x * x; }
+var result = calculate_square(10);  // Expands to (10 * 10)
+
+bytecode {
+    mov r0, 1000;  // Load constant 1000 into register r0
+    sub r0, r0, 1; // Subtract 1 from r0
+    cmp r0, 0;     // Compare r0 with 0
+    jump if zero;  // Jump if zero flag is set
+}
+
+profile start;   // Start profiling
+// Code to be profiled
+profile end;     // End profiling and report results
+
+debug {          // Debug block
+    var x = 10;
+    assert(x == 10);  // Assert if x is not 10
+}
